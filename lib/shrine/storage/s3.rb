@@ -233,8 +233,11 @@ class Shrine
       #
       # It assigns the correct "Content-Type" taken from the MIME type, because
       # by default S3 sets everything to "application/octet-stream".
+
       def upload(io, id, shrine_metadata: {}, **upload_options)
         content_type, filename = shrine_metadata.values_at("mime_type", "filename")
+
+        Rails.logger.info("[Shrine::S3#upload] content_type: #{content_type}, filename: #{filename}")
 
         options = {}
         options[:content_type] = content_type if content_type
@@ -246,8 +249,12 @@ class Shrine
         options[:content_disposition] = encode_content_disposition(options[:content_disposition]) if options[:content_disposition]
 
         if copyable?(io)
+          Rails.logger.info("[Shrine::Storage::S3#upload] COPY: #{options}")
+
           copy(io, id, **options)
         else
+          Rails.logger.info("[Shrine::Storage::S3#upload] PUT: #{options}")
+
           put(io, id, **options)
         end
       end
@@ -381,6 +388,7 @@ class Shrine
       def copy(io, id, **options)
         # pass :content_length on multipart copy to avoid an additional HEAD request
         options = {multipart_copy: true, content_length: io.size}.update(options) if io.size && io.size >= @multipart_threshold[:copy]
+        Rails.logger.info("[Shrine::Storage::S3#copy] #{id}: #{options}")
         object(id).copy_from(io.storage.object(io.id), **options)
       end
 
