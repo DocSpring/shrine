@@ -17,7 +17,7 @@ class Shrine
           default_options   = default_options.call(self, options) if default_options.respond_to?(:call)
           default_options ||= {}
 
-          super(default_options.merge(options))
+          super(**default_options.merge(options))
         end
 
         private

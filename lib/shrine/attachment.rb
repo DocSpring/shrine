@@ -39,7 +39,7 @@ class Shrine
 
         define_method :"#{name}_attacher" do |**options|
           if !instance_variable_get(:"@#{name}_attacher") || options.any?
-            instance_variable_set(:"@#{name}_attacher", attachment.build_attacher(self, options))
+            instance_variable_set(:"@#{name}_attacher", attachment.build_attacher(self, **options))
           else
             instance_variable_get(:"@#{name}_attacher")
           end
@@ -59,8 +59,8 @@ class Shrine
       end
 
       # Creates an instance of the corresponding Attacher subclass.
-      def build_attacher(object, options)
-        shrine_class::Attacher.new(object, @name, @options.merge(options))
+      def build_attacher(object, **options)
+        shrine_class::Attacher.new(object, @name, **@options.merge(options))
       end
 
       # Returns name of the attachment this module provides.
