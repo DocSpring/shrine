@@ -14,7 +14,7 @@ class Shrine
         private
 
         def assign_cached(cached_file)
-          uploaded_file(cached_file) { |file| file.refresh_metadata!(context) }
+          uploaded_file(cached_file) { |file| file.refresh_metadata!(**context) }
           super(cached_file)
         end
       end
